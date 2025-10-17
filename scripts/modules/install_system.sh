@@ -8,6 +8,7 @@ set -euo pipefail
 # =======================================================================================
 
 # --- Source the shared library ---
+# shellcheck source=../lib.sh
 source "$(dirname "$0")/../lib.sh"
 
 # --- Verify correct execution context ---
@@ -45,7 +46,7 @@ pacman -Syu --noconfirm
 pacman -S --noconfirm linux-firmware sof-firmware # Base firmware
 
 # Wi-Fi / Bluetooth
-read -p "Install common Wi-Fi (Broadcom) and Bluetooth drivers? (y/N) " install_wifi
+read -r -p "Install common Wi-Fi (Broadcom) and Bluetooth drivers? (y/N) " install_wifi
 if [[ "$install_wifi" =~ ^([yY])$ ]]; then
     pacman -S --noconfirm broadcom-wl-dkms bluez bluez-utils || log "WARN" "Could not install Wi-Fi/Bluetooth drivers."
 fi
@@ -54,23 +55,23 @@ fi
 log "INFO" "Selecting graphics drivers (you can choose multiple if needed, e.g., for hybrid graphics):"
 GFX_DRIVERS="mesa" # Mesa is always needed as a base
 
-read -p "Install Intel drivers (mesa)? [Y/n] " install_intel
+read -r -p "Install Intel drivers (mesa)? [Y/n] " install_intel
 # Mesa is already included, so no action needed, just confirmation log
 if [[ ! "$install_intel" =~ ^([nN])$ ]]; then log "INFO" "Intel drivers (mesa) selected."; fi
 
-read -p "Install AMD drivers (mesa + xf86-video-amdgpu)? (y/N) " install_amd
+read -r -p "Install AMD drivers (mesa + xf86-video-amdgpu)? (y/N) " install_amd
 if [[ "$install_amd" =~ ^([yY])$ ]]; then
     GFX_DRIVERS+=" xf86-video-amdgpu"
     log "INFO" "AMD drivers selected."
 fi
 
-read -p "Install NVIDIA proprietary drivers (nvidia-dkms)? (y/N) " install_nvidia
+read -r -p "Install NVIDIA proprietary drivers (nvidia-dkms)? (y/N) " install_nvidia
 if [[ "$install_nvidia" =~ ^([yY])$ ]]; then
     GFX_DRIVERS+=" nvidia-dkms"
     log "INFO" "NVIDIA drivers selected."
 fi
 
-pacman -S --noconfirm $GFX_DRIVERS
+pacman -S --noconfirm "$GFX_DRIVERS"
 log "SUCCESS" "Graphics drivers installation configured."
 sleep 2
 
@@ -118,7 +119,7 @@ log "SUCCESS" "AUR helper (paru) and BlackArch repositories are ready."
 # STAGE 2.5: OPTIONAL EXTERNAL WIFI DRIVERS (AUR)
 #--------------------------------------------------------------------------------
 log "INFO" "--- STAGE 2.5: OPTIONAL EXTERNAL WI-FI DRIVERS ---"
-read -p "Do you want to attempt installation of common drivers for EXTERNAL USB Wi-Fi adapters (e.g., Alfa, TP-Link, Panda)? (Requires AUR access) (y/N) " install_external_wifi
+read -r -p "Do you want to attempt installation of common drivers for EXTERNAL USB Wi-Fi adapters (e.g., Alfa, TP-Link, Panda)? (Requires AUR access) (y/N) " install_external_wifi
 if [[ "$install_external_wifi" =~ ^([yY])$ ]]; then
     log "INFO" "Attempting to install common external Wi-Fi drivers from AUR..."
     # Expanded list including common Realtek, Ralink, and Atheros USB chipsets

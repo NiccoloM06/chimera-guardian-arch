@@ -8,6 +8,7 @@ set -euo pipefail
 # =======================================================================================
 
 # --- Source the shared library ---
+# shellcheck source=../lib.sh
 source "$(dirname "$0")/../lib.sh"
 
 # --- Verify correct execution context ---

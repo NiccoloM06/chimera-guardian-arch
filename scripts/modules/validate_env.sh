@@ -9,6 +9,7 @@ set -euo pipefail
 
 # --- Source the shared library ---
 # Need the logger and CHIMERA_ROOT
+# shellcheck source=../lib.sh
 source "$(dirname "$0")/../lib.sh"
 
 log "INFO" "--- Validating Environment Configuration ---"

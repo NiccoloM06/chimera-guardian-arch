@@ -9,6 +9,7 @@ set -euo pipefail
 
 # --- Source the shared library ---
 # Provides logging functions, colors, CHIMERA_ROOT, and theme variable ($THEME).
+# shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/scripts/lib.sh"
 
 # --- Argument Parsing ---
@@ -31,7 +32,9 @@ link() {
 
   # Backup existing file/directory if it's not already a symlink and backup is enabled
   if [ "$NO_BACKUP" = false ] && [ -e "$dest" ] && [ ! -L "$dest" ]; then
-      local bak_dest="${dest}.bak_$(date +%F_%T)"
+      # SC2155 Fix: Declare separately
+      local bak_dest
+      bak_dest="${dest}.bak_$(date +%F_%T)"
       log "WARN" "Found existing config at '$dest'. Backing it up to '$bak_dest'."
       mv "$dest" "$bak_dest"
   fi

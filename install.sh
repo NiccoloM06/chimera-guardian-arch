@@ -9,6 +9,7 @@ set -euo pipefail
 # --- Source the shared library ---
 # Provides logging functions, color codes, CHIMERA_ROOT, and error handling.
 # The path must be relative to this script's location.
+# shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/scripts/lib.sh"
 
 # --- Function to display usage information ---
@@ -33,7 +34,7 @@ run_unattended_install() {
     log "WARN" "STARTING UNATTENDED INSTALLATION (--unattended)."
     log "WARN" "This script will attempt to automatically modify /etc/default/grub and /etc/fstab."
     log "WARN" "This is potentially risky. Proceed only on a clean, fresh installation."
-    read -p "Continue with the fully automated installation? (y/N) " response
+    read -r -p "Continue with the fully automated installation? (y/N) " response
     if [[ ! "$response" =~ ^([yY])$ ]]; then
         log "INFO" "Aborted."
         exit 0
@@ -109,7 +110,7 @@ log "SUCCESS" ".env configuration is valid."
 # --- Interactive Prompt for New Users ---
 if [ $# -eq 0 ]; then
     log "INFO" "Welcome to the Chimera Guardian Arch installer."
-    read -p "No flags provided. Would you like to start a fresh installation? (y/N) " response
+    read -r -p "No flags provided. Would you like to start a fresh installation? (y/N) " response
     if [[ "$response" =~ ^([yY])$ ]]; then
         # Re-execute the script with the --fresh flag and sudo
         log "INFO" "Restarting with sudo for fresh installation..."

@@ -10,28 +10,26 @@ set -euo pipefail
 # Provides logging functions, CHIMERA_ROOT, and error handling.
 # Also sources .env implicitly via logger.sh.
 CHIMERA_ROOT="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+# shellcheck source=scripts/core/logger.sh
 source "$CHIMERA_ROOT/scripts/core/logger.sh"
 
 # --- Source Version Information ---
 # Assumes a VERSION file exists in the root directory.
-if [ -f "$CHIMERA_ROOT/VERSION" ]; then
-    source "$CHIMERA_ROOT/VERSION"
-else
-    PROJECT_VERSION="N/A"
-    log_warn "VERSION file not found."
-fi
+# shellcheck source=VERSION
+source "$CHIMERA_ROOT/VERSION"
 
 # --- Dynamic ASCII Banner ---
 print_banner() {
     # Using colors defined in logger.sh
-    echo -e "${RED}"
+    echo -e "${BLUE}" # Using Blue for Chimera theme
     echo '  #####  #    #  ####  #    #  ######  #####      #    '
     echo ' #       #    #   ##   ##  ##  #       #    #    # #   '
     echo ' #       ######   ##   # ## #  #####   #    #   #   #  '
     echo ' #       #    #   ##   #    #  #       #####   ####### '
     echo ' #       #    #   ##   #    #  #       #   #   #     # '
     echo '  #####  #    #  ####  #    #  ######  #    #  #     # '
-    echo -e "                    ${NC}v${PROJECT_VERSION}"echo ""
+    echo -e "                    ${NC}v${PROJECT_VERSION}"
+    echo ""
 }
 
 # --- Usage/Help Function ---
@@ -40,8 +38,8 @@ usage() {
     echo "Usage: overlord <command> [options]"
     echo ""
     echo "Commands:"
-    echo "  install    - Run the full, fresh system installation (requires sudo)."
-    echo "  finalize   - Run post-reboot finalization (requires sudo)."
+    echo "  install    - Run the full, fresh system installation."
+    echo "  finalize   - Run post-reboot finalization."
     echo "  update [-y] - Update the entire system (OS, AUR, Exploit-DB). Use -y for non-interactive."
     echo "  backup     - Create a secure snapshot of configurations."
     echo "  rollback   - Restore configurations from the latest backup."
