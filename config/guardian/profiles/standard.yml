@@ -1,0 +1,34 @@
+# =======================================================================================
+#  GUARDIAN PROFILE: STANDARD | CHIMERA GUARDIAN ARCH
+#  Defines the settings for the default, everyday security level. This file is read by guardian-cli.
+# =======================================================================================
+
+# Human-readable name and description for the profile.
+name: "Standard"
+description: "Balanced profile for daily use. Provides a direct, high-speed connection with all DNS queries encrypted via DNSCrypt to protect against ISP snooping."
+
+# Services to be managed when this profile is activated.
+services:
+  enable:
+    - dnscrypt-proxy
+  disable:
+    - tor
+    - privoxy
+
+# Network interface card (NIC) specific settings.
+network:
+  # MAC address randomization is disabled for this profile to ensure stable connectivity.
+  mac_spoofing: false
+
+# Firewall configuration.
+firewall:
+  # The engine responsible for applying the rules.
+  engine: "ufw"
+
+  # A system-wide kill switch is not active in this profile.
+  kill_switch: false
+
+  # Defines the basic UFW policy for this level.
+  rules:
+    - "ufw default deny incoming"
+    - "ufw default allow outgoing"

@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# =======================================================================================
+#  OVERLORD UNIFIED CLI | CHIMERA GUARDIAN ARCH (Overlord Edition)
+#  The main entry point for interacting with the Chimera framework.
+# =======================================================================================
+
+# --- Source Core Library ---
+# Provides logging functions, CHIMERA_ROOT, and error handling.
+# Also sources .env implicitly via logger.sh.
+CHIMERA_ROOT="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+source "$CHIMERA_ROOT/scripts/core/logger.sh"
+
+# --- Source Version Information ---
+# Assumes a VERSION file exists in the root directory.
+if [ -f "$CHIMERA_ROOT/VERSION" ]; then
+    source "$CHIMERA_ROOT/VERSION"
+else
+    PROJECT_VERSION="N/A"
+    log_warn "VERSION file not found."
+fi
+
+# --- Dynamic ASCII Banner ---
+print_banner() {
+    # Using colors defined in logger.sh
+    echo -e "${RED}"
+    echo '  #####  #    #  ####  #    #  ######  #####      #    '
+    echo ' #       #    #   ##   ##  ##  #       #    #    # #   '
+    echo ' #       ######   ##   # ## #  #####   #    #   #   #  '
+    echo ' #       #    #   ##   #    #  #       #####   ####### '
+    echo ' #       #    #   ##   #    #  #       #   #   #     # '
+    echo '  #####  #    #  ####  #    #  ######  #    #  #     # '
+    echo -e "                    ${NC}v${PROJECT_VERSION}"echo ""
+}
+
+# --- Usage/Help Function ---
+usage() {
+    print_banner
+    echo "Usage: overlord <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  install    - Run the full, fresh system installation (requires sudo)."
+    echo "  finalize   - Run post-reboot finalization (requires sudo)."
+    echo "  update [-y] - Update the entire system (OS, AUR, Exploit-DB). Use -y for non-interactive."
+    echo "  backup     - Create a secure snapshot of configurations."
+    echo "  rollback   - Restore configurations from the latest backup."
+    echo "  status     - Run a system health and security check (requires sudo)."
+    echo "  tui        - Launch the interactive TUI Control Center."
+    echo "  link       - (Re)create symbolic links for configuration files."
+    echo "  theme <name>- Apply a different theme."
+    echo "  vm <profile>- Create a VM from profile (e.g., overlord vm tor)."
+    echo "  help       - Display this help message."
+    echo ""
+    echo "Run commands from the project root directory."
+}
+
+# --- Main Command Dispatcher ---
+# Use "${1:-help}" to default to the help command if no arguments are given.
+case "${1:-help}" in
+    install)
+        print_banner
+        log_info "Starting full system installation..."
+        # Requires sudo
+        sudo "$CHIMERA_ROOT/scripts/ops/install.sh"
+        ;;
+    finalize)
+        print_banner
+        log_info "Starting post-reboot finalization..."
+        # Requires sudo
+        sudo "$CHIMERA_ROOT/scripts/ops/finalize.sh"
+        ;;
+    update)
+        print_banner
+        log_info "Starting system update..."
+        # Requires sudo, passes any additional arguments (like -y)
+        sudo "$CHIMERA_ROOT/scripts/ops/update.sh" "${@:2}"
+        ;;
+    backup)
+        print_banner
+        # Runs as the current user
+        "$CHIMERA_ROOT/scripts/ops/backup.sh"
+        ;;
+    rollback)
+        print_banner
+        # Runs as the current user
+        "$CHIMERA_ROOT/scripts/ops/rollback.sh"
+        ;;
+    status)
+        print_banner
+        # Requires sudo
+        sudo "$CHIMERA_ROOT/scripts/modules/healthcheck.sh"
+        ;;
+    tui)
+        # Runs as the current user
+        "$CHIMERA_ROOT/tui/dashboard.sh"
+        ;;
+    link)
+        print_banner
+        # Runs as the current user
+        "$CHIMERA_ROOT/link-configs.sh"
+        ;;
+    theme)
+        if [ -z "${2:-}" ]; then log_error "The theme command requires a theme name."; usage; exit 1; fi
+        print_banner
+        log_info "Switching theme to '$2'..."
+        # Assumes switch-theme.sh exists and is executable
+        "$CHIMERA_ROOT/switch-theme.sh" "$2"
+        ;;
+    vm)
+        if [ -z "${2:-}" ]; then log_error "The vm command requires a profile name."; usage; exit 1; fi
+        print_banner
+        log_info "Creating VM from profile: $2..."
+        # Runs as the current user
+        "$CHIMERA_ROOT/vm-profiles/create-vm.sh" "$2"
+        ;;
+    help|--help|-h)
+        usage
+        ;;
+    *)
+        log_error "Unknown command: $1"
+        usage
+        exit 1
+        ;;
+esac

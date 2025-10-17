@@ -1,0 +1,141 @@
+/* =======================================================================================
+ * WAYBAR STYLING (CSS) | CHIMERA GUARDIAN ARCH (Overlord Edition)
+ * Defines the visual appearance of the status bar and its modules.
+ * Colors are sourced dynamically based on the selected theme.
+ * =======================================================================================
+ */
+
+/* ---------------------------------------------------------------------------------------
+ * GENERAL STYLING
+ * ---------------------------------------------------------------------------------------
+ */
+* {
+    /* Use the same Nerd Font as the terminal for consistent icons and text */
+    font-family: JetBrainsMono Nerd Font, FontAwesome, sans-serif;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+/* ---------------------------------------------------------------------------------------
+ * MAIN BAR
+ * ---------------------------------------------------------------------------------------
+ */
+window#waybar {
+    /* Use theme variables for colors */
+    background-color: @theme_bg_color_transparent; /* Semi-transparent background */
+    border-bottom: 2px solid @theme_accent_color_transparent; /* Accent color border */
+    color: @theme_fg_color; /* Foreground text color */
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+/* ---------------------------------------------------------------------------------------
+ * MODULE-SPECIFIC STYLING
+ * ---------------------------------------------------------------------------------------
+ */
+
+/* --- Workspaces --- */
+#workspaces {
+    background-color: transparent;
+    margin: 0 4px;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    background-color: transparent;
+    color: @theme_inactive_color; /* Dim color for inactive workspaces */
+    border-radius: 10px;
+}
+
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: inherit; /* Prevent hover effect from adding shadow */
+}
+
+#workspaces button.focused {
+    background-color: @theme_selected_bg_color;
+    color: @theme_fg_color;
+}
+
+#workspaces button.urgent {
+    background-color: @theme_urgent_color;
+}
+
+/* --- General Modules --- */
+#clock,
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#tray,
+#custom-arch-menu,
+#custom-guardian {
+    padding: 0 10px;
+    margin: 0 4px;
+    color: @theme_fg_color;
+}
+
+/* --- Specific Module Colors for Quick Identification --- */
+#clock {
+    background-color: @theme_selected_bg_color;
+    border-radius: 10px 0px 0px 10px; /* Rounded left edge */
+}
+
+#cpu {
+    background-color: @theme_comment_color; /* Slightly muted color */
+}
+
+#memory {
+    background-color: @theme_accent_color; /* Main accent color */
+    color: @theme_bg_color; /* Dark text for contrast */
+}
+
+#network {
+    background-color: @theme_green_color;
+    color: @theme_bg_color;
+}
+
+#pulseaudio {
+    background-color: @theme_pink_color;
+    color: @theme_bg_color;
+}
+
+#pulseaudio.muted {
+    background-color: @theme_yellow_color;
+    color: @theme_bg_color;
+}
+
+/* --- Custom Modules --- */
+#custom-arch-menu {
+    background-color: @theme_red_color; /* BlackArch red */
+    color: @theme_fg_color;
+    border-radius: 10px 0px 0px 10px; /* Rounded left edge */
+    margin-left: 8px;
+}
+
+#custom-guardian {
+    background-color: @theme_selected_bg_color;
+    /* Color will be dynamically updated based on state */
+}
+/* Style for Guardian states */
+#custom-guardian.secure {
+    background-color: @theme_green_color;
+    color: @theme_bg_color;
+}
+#custom-guardian.warn {
+    background-color: @theme_yellow_color;
+    color: @theme_bg_color;
+}
+#custom-guardian.alert {
+    background-color: @theme_red_color;
+    color: @theme_fg_color;
+}
+
+
+#tray {
+    background-color: @theme_selected_bg_color;
+    border-radius: 0px 10px 10px 0px; /* Rounded right edge */
+    margin-right: 8px;
+}

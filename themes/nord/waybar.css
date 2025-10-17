@@ -1,0 +1,42 @@
+/* =======================================================================================
+ * WAYBAR THEME: NORD | CHIMERA GUARDIAN ARCH
+ * Defines the color variables expected by the main style.css
+ * =======================================================================================
+ */
+
+/* --- Nord Color Palette --- */
+@define-color nord0 #2E3440; /* Polar Night - Background */
+@define-color nord1 #3B4252; /* Polar Night - Lighter BG */
+@define-color nord2 #434C5E; /* Polar Night - Selection */
+@define-color nord3 #4C566A; /* Polar Night - Comments / Border */
+@define-color nord4 #D8DEE9; /* Snow Storm - Foreground */
+@define-color nord5 #E5E9F0; /* Snow Storm - Lighter FG */
+@define-color nord6 #ECEFF4; /* Snow Storm - Brightest FG */
+@define-color nord7 #8FBCBB; /* Frost - Cyan/Teal */
+@define-color nord8 #88C0D0; /* Frost - Main Accent Blue */
+@define-color nord9 #81A1C1; /* Frost - Darker Blue */
+@define-color nord10 #5E81AC;/* Frost - Darkest Blue */
+@define-color nord11 #BF616A;/* Aurora - Red */
+@define-color nord12 #D08770;/* Aurora - Orange */
+@define-color nord13 #EBCB8B;/* Aurora - Yellow */
+@define-color nord14 #A3BE8C;/* Aurora - Green */
+@define-color nord15 #B48EAD;/* Aurora - Magenta */
+
+/* --- Theme Variables for Waybar --- */
+@define-color theme_bg_color @nord0;
+@define-color theme_fg_color @nord4;
+@define-color theme_selected_bg_color @nord2;
+@define-color theme_comment_color @nord3;
+@define-color theme_red_color @nord11;
+@define-color theme_green_color @nord14;
+@define-color theme_yellow_color @nord13;
+@define-color theme_blue_color @nord9;
+@define-color theme_pink_color @nord15; /* Using Magenta as Pink */
+@define-color theme_cyan_color @nord8; /* Using Frost Blue as Cyan Accent */
+@define-color theme_accent_color @nord8; /* Main Accent */
+
+/* --- Calculated Colors --- */
+@define-color theme_bg_color_transparent rgba(46, 52, 64, 0.8); /* nord0 with opacity */
+@define-color theme_accent_color_transparent rgba(136, 192, 208, 0.7); /* nord8 with opacity */
+@define-color theme_inactive_color @nord3;      /* Dim color for inactive elements */
+@define-color theme_urgent_color @nord11;

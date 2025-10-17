@@ -1,0 +1,100 @@
+# ==============================================================================
+#  Custom Functions and Aliases | CHIMERA GUARDIAN ARCH
+#  Sourced by ~/.zshrc to provide quick commands.
+# ==============================================================================
+
+# --- Load Powerlevel10k Theme Engine ---
+# This must be sourced first to enable the theme.
+# It will automatically look for and load the ~/.p10k.zsh config file.
+[[ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+
+# --- Source Shared Library for Colors ---
+# Load colors and logging functions if the library file exists
+# This makes the functions interactive even outside the Makefile context
+if [[ -f ~/chimera-guardian-arch/scripts/lib.sh ]]; then
+    source ~/chimera-guardian-arch/scripts/lib.sh
+else
+    # Define fallback colors if lib.sh isn't sourced (e.g., if repo moved)
+    GREEN='\033[1;32m'
+    YELLOW='\033[1;33m'
+    RED='\033[1;31m'
+    BLUE='\033[1;34m'
+    NC='\033[0m' # No Color
+fi
+
+# --- System Maintenance ---
+# Securely updates the entire system (OS, AUR, Exploit-DB) and cleans orphans.
+# Accepts '-y' for non-interactive mode.
+update() {
+    echo -e "🚀 ${BLUE}Starting full system update & maintenance...${NC}"
+    # Use the specific script path for clarity, requires sudo
+    sudo /usr/local/bin/update-chimera "$@"
+}
+
+# --- Security Posture Control (Guardian) ---
+# Functions provide feedback before calling the backend guardian-cli.
+gdn-standard() {
+    echo -e "🚀 Initializing Security Level 1 ${GREEN}(Standard)${NC}..."
+    sudo guardian-cli set standard
+}
+
+gdn-secure() {
+    echo -e "🚀 Activating Security Level 2 ${YELLOW}(Secure)${NC}..."
+    sudo guardian-cli set secure
+}
+
+gdn-paranoid() {
+    echo -e "🚀 Engaging Security Level 3 ${RED}(Paranoid)${NC}..."
+    sudo guardian-cli set paranoid
+}
+
+gdn-cyberlab() {
+    echo -e "🚀 Engaging Security Level ${YELLOW}(CyberLab)${NC}..."
+    sudo guardian-cli set cyberlab
+}
+
+gdn-status() {
+    echo -e "📊 ${BLUE}Querying current security status...${NC}"
+    sudo guardian-cli status
+}
+
+# --- AIDE Integrity Check ---
+aide-check() {
+    echo -e "🔎 ${BLUE}Checking system integrity (this may take a while)...${NC}"
+    sudo aide --check
+}
+
+aide-update() {
+    echo -e "🔄 ${YELLOW}Updating AIDE integrity baseline...${NC}"
+    sudo aide --update && sudo mv -f /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz && echo -e "${GREEN}[OK]${NC}   AIDE baseline updated."
+}
+
+# --- Quick Launchers & Tools ---
+vms() {
+    echo -e "🖥️  ${BLUE}Launching Virtual Machine Manager...${NC}"
+    virt-manager
+}
+
+safe-browser() {
+    echo -e "🛡️  ${BLUE}Launching Firefox in isolated sandbox...${NC}"
+    sandbox-run firefox "$@" # Uses the sandbox-run script
+}
+
+disks() {
+    echo -e "💾 ${BLUE}Launching GParted Partition Manager...${NC}"
+    # Use pkexec for graphical applications requiring root
+    pkexec gparted
+}
+
+tui() {
+    echo -e "👑 ${BLUE}Launching TUI Control Center...${NC}"
+    # Assumes the TUI script is accessible or in PATH, adjust if needed
+    ~/chimera-guardian-arch/tui/dashboard.sh
+}
+
+# ==============================================================================
+#  SHELL STARTUP
+# ==============================================================================
+# Clear the screen and display system info when a new terminal opens.
+clear
+fastfetch

@@ -1,0 +1,20 @@
+# =======================================================================================
+#  THEME MANIFEST: DRACULA | CHIMERA GUARDIAN ARCH
+# =======================================================================================
+
+name: "Dracula"
+description: "A popular dark theme with vibrant accent colors."
+author: "Dracula Theme Organization (adapted for Chimera)"
+palette:
+  background: "#282a36"
+  foreground: "#f8f8f2"
+  selection: "#44475a"
+  comment: "#6272a4"
+  red: "#ff5555"
+  green: "#50fa7b"
+  yellow: "#f1fa8c"
+  blue: "#bd93f9"
+  magenta: "#ff79c6"
+  cyan: "#8be9fd"
+# Optional preview image path (relative to docs folder)
+# preview: "screenshots/themes/dracula.png"

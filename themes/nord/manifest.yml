@@ -1,0 +1,20 @@
+# =======================================================================================
+#  THEME MANIFEST: NORD | CHIMERA GUARDIAN ARCH
+# =======================================================================================
+
+name: "Nord"
+description: "An arctic, north-bluish color palette known for its clean and elegant look."
+author: "Arctic Ice Studio (adapted for Chimera)"
+palette:
+  background: "#2E3440" # nord0
+  foreground: "#D8DEE9" # nord4
+  selection: "#434C5E" # nord1
+  comment: "#4C566A" # nord3
+  red: "#BF616A" # nord11
+  green: "#A3BE8C" # nord14
+  yellow: "#EBCB8B" # nord13
+  blue: "#81A1C1" # nord9
+  magenta: "#B48EAD" # nord15
+  cyan: "#88C0D0" # nord8
+# Optional preview image path (relative to docs folder)
+# preview: "screenshots/themes/nord.png"

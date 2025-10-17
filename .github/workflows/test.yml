@@ -1,0 +1,91 @@
+# =======================================================================================
+#  WORKFLOW DI INTEGRAZIONE CONTINUA (CI) | CHIMERA GUARDIAN ARCH
+#  Questo workflow esegue controlli automatici di linting, test e verifica dell'integrità.
+# =======================================================================================
+
+name: CI Pipeline
+
+# --- TRIGGER ---
+# Questo workflow si attiva ad ogni 'push' sul branch 'main' e ad ogni pull request
+# che ha come target il branch 'main'.
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# --- JOB ---
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------------------------------------------------------------
+      #  Passo 1: Checkout del Codice
+      #  Recupera l'ultima versione del codice dal repository.
+      # -----------------------------------------------------------------------------------
+      - name: Checkout del codice del repository
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------------------
+      #  Passo 2: Installazione delle Dipendenze
+      #  Installa tutti gli strumenti necessari per i nostri controlli di qualità.
+      # -----------------------------------------------------------------------------------
+      - name: Installazione delle dipendenze per la CI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck yamllint python3-flake8 python3-pytest bats
+
+      # -----------------------------------------------------------------------------------
+      #  Passo 3: Esecuzione dei Linter
+      #  Controlla errori di stile e potenziali bug in tutti gli script e file di configurazione.
+      # -----------------------------------------------------------------------------------
+      - name: Esecuzione dei Linter
+        run: |
+          echo "--- Esecuzione di ShellCheck per gli script Bash ---"
+          shellcheck scripts/**/*.sh install.sh link-configs.sh zsh_functions overlord
+          
+          echo "--- Esecuzione di yamllint per i file YAML ---"
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -exec yamllint {} +
+          
+          echo "--- Esecuzione di flake8 per gli script Python ---"
+          flake8 ai/
+
+      # -----------------------------------------------------------------------------------
+      #  Passo 4: Verifica dell'Integrità degli Script
+      #  Assicura che il file 'checksums.txt' presente nel commit sia aggiornato.
+      # -----------------------------------------------------------------------------------
+      - name: Verifica dei checksum degli script
+        run: |
+          echo "--- Verifica dell'integrità degli script critici ---"
+          # Rigenera i checksum dai file correnti
+          find ./scripts -type f -name "*.sh" | xargs sha256sum > generated_checksums.txt
+          
+          # Confronta il file generato con quello nel repository
+          if ! diff -q checksums.txt generated_checksums.txt; then
+            echo "ERRORE: checksums.txt non è aggiornato. Esegui 'make checksums' e committa le modifiche."
+            exit 1
+          fi
+          echo "I checksum sono validi."
+
+      # -----------------------------------------------------------------------------------
+      #  Passo 5: Esecuzione dei Test Automatici
+      #  Esegue le suite di test unitari e di integrazione per il framework.
+      # -----------------------------------------------------------------------------------
+      - name: Esecuzione dei Test Automatici
+        run: |
+          echo "--- Esecuzione dei test BATS per gli script shell ---"
+          bats tests/
+          
+          echo "--- Esecuzione di Pytest per i moduli Python ---"
+          pytest
+
+      # -----------------------------------------------------------------------------------
+      #  Passo 6: Controllo di Sintassi su Tutti gli Script Shell
+      #  Un controllo finale di sicurezza per individuare eventuali errori di sintassi.
+      # -----------------------------------------------------------------------------------
+      - name: Controllo di sintassi su tutti i file .sh
+        run: |
+          echo "--- Esecuzione del controllo di sintassi (bash -n) su tutti i file .sh ---"
+          find . -type f -name "*.sh" -exec bash -n {} +

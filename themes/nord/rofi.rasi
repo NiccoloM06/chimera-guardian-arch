@@ -1,0 +1,126 @@
+/* =======================================================================================
+ * ROFI THEME: NORD | CHIMERA GUARDIAN ARCH
+ * =======================================================================================
+ */
+
+* {
+    /* Nord Palette */
+    nord-bg:          #2E3440; /* nord0 */
+    nord-fg:          #D8DEE9; /* nord4 */
+    nord-selection:   #434C5E; /* nord1 */
+    nord-comment:     #4C566A; /* nord3 */
+    nord-red:         #BF616A; /* nord11 */
+    nord-frost-blue:  #88C0D0; /* nord8 - Accent */
+
+    /* Theme definition */
+    background-color:   @nord-bg;
+    border-color:       @nord-comment;
+    text-color:         @nord-fg;
+    selected-bg:        @nord-selection;
+    selected-fg:        @nord-frost-blue;
+    urgent-bg:          @nord-red;
+    urgent-fg:          @nord-fg;
+    active-bg:          @nord-selection;
+    active-fg:          @nord-fg;
+
+    font:               "JetBrainsMono Nerd Font 12";
+    background-color:   transparent;
+    spacing:            2;
+}
+
+window {
+    background-color: @nord-bg;
+    border:           2px;
+    border-color:     @nord-comment;
+    border-radius:    10px;
+    padding:          16;
+    width:            600px;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+message {
+    border:       1px solid @border-color;
+    border-radius: 5px;
+    padding:      5px;
+}
+
+textbox {
+    text-color: @nord-fg;
+}
+
+listview {
+    fixed-height: 0;
+    border:       1px solid @border-color;
+    border-radius: 5px;
+    spacing:      5px;
+    scrollbar:    false;
+    padding:      8px;
+    margin:       8px 0 0 0;
+    columns:      1;
+    lines:        8;
+}
+
+element {
+    border:  0;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+element.normal.normal {
+    background-color: @nord-bg;
+    text-color:       @nord-fg;
+}
+
+element.normal.urgent {
+    background-color: @urgent-bg;
+    text-color:       @urgent-fg;
+}
+
+element.normal.active {
+    background-color: @active-bg;
+    text-color:       @active-fg;
+}
+
+element.selected.normal {
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
+}
+
+element.selected.urgent {
+    background-color: @urgent-bg;
+    text-color:       @nord-fg;
+}
+
+element.selected.active {
+    background-color: @active-bg;
+    text-color:       @nord-fg;
+}
+
+inputbar {
+    spacing:    0;
+    text-color: @nord-fg;
+    padding:    8px;
+    border-radius: 8px;
+    background-color: @nord-selection;
+}
+
+case-indicator,
+entry,
+prompt {
+    spacing:    0;
+    text-color: inherit;
+    background-color: inherit;
+}
+
+prompt {
+    margin: 0 0.3em 0 0 ;
+}

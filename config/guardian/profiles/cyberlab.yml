@@ -1,0 +1,36 @@
+# =-=====================================================================================
+#  GUARDIAN PROFILE: CYBERLAB | CHIMERA GUARDIAN ARCH
+#  Defines a security posture optimized for offensive security and penetration testing.
+# =-=====================================================================================
+
+# Human-readable name and description for the profile.
+name: "CyberLab"
+description: "An operational profile for offensive security. Enables MAC spoofing and makes anonymity tools available, but uses a less restrictive firewall policy to allow pentesting tools to function correctly."
+
+# Services to be managed when this profile is activated.
+services:
+  enable:
+    - tor
+    - privoxy
+  disable:
+    - dnscrypt-proxy # Disabled to allow for custom DNS queries and network analysis without interference.
+
+# Network interface card (NIC) specific settings.
+network:
+  # MAC address randomization is enabled by default for operational security.
+  mac_spoofing: true
+
+# Firewall configuration.
+firewall:
+  # The engine responsible for applying the rules.
+  engine: "ufw"
+
+  # A system-wide kill switch is explicitly disabled in this profile, as it would
+  # interfere with the operation of many network scanning and exploitation tools.
+  kill_switch: false
+
+  # Defines the UFW policy for this level. It allows all outbound connections,
+  # which is necessary for tools like Nmap, Metasploit, etc., to work.
+  rules:
+    - "ufw default deny incoming"
+    - "ufw default allow outgoing"cyberlab.yml

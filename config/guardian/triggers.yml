@@ -1,0 +1,34 @@
+# =======================================================================================
+#  GUARDIAN DAEMON TRIGGERS | CHIMERA GUARDIAN ARCH
+#  Defines automated responses to specific security events.
+#  This file is read by the guardian_daemon.sh service.
+# =======================================================================================
+
+triggers:
+  # --- CRITICAL: Kernel-Level Intrusion ---
+  - name: "Kernel Integrity Compromised (LKRG)"
+    description: "An LKRG alert indicates a potential kernel-level exploit. This is the highest priority threat. The system will immediately transition to Paranoid mode to sever all non-Tor network connections and engage the kill switch."
+    event: "lkrg_kernel_integrity_alert"
+    action: "guardian-cli set paranoid"
+    enabled: true
+
+  # --- CRITICAL: Filesystem Integrity Breach ---
+  - name: "Critical File Modification (AIDE/inotify)"
+    description: "The Guardian Daemon has detected an unauthorized real-time modification to a critical system binary or configuration file (e.g., in /usr/bin or /etc/passwd). This is a strong indicator of compromise."
+    event: "critical_file_modified"
+    action: "guardian-cli set paranoid"
+    enabled: true
+
+  # --- HIGH: Syscall Anomaly ---
+  - name: "High-Severity Syscall Anomaly (Falco)"
+    description: "Falco has detected a high-severity event, such as a shell being spawned in a sensitive location or unexpected network activity from a system binary. This triggers a notification for immediate operator review."
+    event: "falco_high_severity_alert"
+    action: "notify-send -u critical 'FALCO ALERT' 'High-severity syscall anomaly detected. Immediate review required. See logs/guardian.log for details.'"
+    enabled: true
+
+  # --- MEDIUM: AI Anomaly Detection (Experimental) ---
+  - name: "AI Log Anomaly Detection"
+    description: "The local AI module has detected an anomalous pattern in system logs that deviates significantly from the trained baseline. This is a suggestion for operator review."
+    event: "ai_anomaly_detected"
+    action: "notify-send -u normal 'AI AUDIT' 'Potential anomaly detected in system logs. Manual review is recommended.'"
+    enabled: false # Disabled by default as it is an advanced, potentially noisy feature.

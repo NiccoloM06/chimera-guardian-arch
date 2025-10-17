@@ -1,0 +1,147 @@
+/* =======================================================================================
+ * ROFI CONFIGURATION | CHIMERA GUARDIAN ARCH
+ * Defines the application launcher's look, feel, and behavior.
+ * =======================================================================================
+ */
+
+configuration {
+    /* Modes: drun shows .desktop applications, run allows executing shell commands */
+    modi: "drun,run";
+
+    /* Display application icons */
+    show-icons: true;
+
+    /* Use the same Nerd Font as the terminal for consistency */
+    font: "JetBrainsMono Nerd Font 12";
+
+    /* Set the theme defined below */
+    /* Note: Theme definitions in the same file override external themes */
+    theme: "dracula";
+
+    /* Optional: Other settings like position, case sensitivity etc. */
+    // location: 0; /* Center */
+    // case-sensitive: false;
+    // cycle: true; /* Wrap around list */
+}
+
+/* ---------------------------------------------------------------------------------------
+ * THEME (DRACULA)
+ * ---------------------------------------------------------------------------------------
+ */
+@theme "dracula" {
+    * {
+        /* Dracula Palette */
+        background-color:   #282a36; /* Background */
+        border-color:       #6272a4; /* Comment */
+        text-color:         #f8f8f2; /* Foreground */
+        selected-bg:        #44475a; /* Current Line/Selection Background */
+        selected-fg:        #bd93f9; /* Purple (Accent) */
+        urgent-bg:          #ff5555; /* Red */
+        urgent-fg:          @text-color;
+        active-bg:          @selected-bg;
+        active-fg:          @text-color;
+
+        /* Layout */
+        font:               "JetBrainsMono Nerd Font 12";
+        text-color:         @text-color;
+        background-color:   transparent; /* Use window background */
+        spacing:            2;
+    }
+
+    window {
+        background-color: @background-color;
+        border:           2px;
+        border-color:     @border-color;
+        border-radius:    10px;
+        padding:          16;
+        width:            600px;
+    }
+
+    mainbox {
+        border:  0;
+        padding: 0;
+    }
+
+    message {
+        border:       1px solid @border-color;
+        border-radius: 5px;
+        padding:      5px;
+    }
+
+    textbox {
+        text-color: @text-color;
+    }
+
+    listview {
+        fixed-height: 0;
+        border:       1px solid @border-color;
+        border-radius: 5px;
+        spacing:      5px;
+        scrollbar:    false;
+        padding:      8px;
+        margin:       8px 0 0 0; /* Add margin above listview */
+        columns:      1;
+        lines:        8; /* Show max 8 lines */
+    }
+
+    element {
+        border:  0;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    element-text {
+        background-color: inherit;
+        text-color:       inherit;
+    }
+
+    element.normal.normal {
+        background-color: @background-color;
+        text-color:       @text-color;
+    }
+
+    element.normal.urgent {
+        background-color: @urgent-bg;
+        text-color:       @urgent-fg;
+    }
+
+    element.normal.active {
+        background-color: @active-bg;
+        text-color:       @active-fg;
+    }
+
+    element.selected.normal {
+        background-color: @selected-bg;
+        text-color:       @selected-fg;
+    }
+
+    element.selected.urgent {
+        background-color: @urgent-bg;
+        text-color:       @text-color;
+    }
+
+    element.selected.active {
+        background-color: @active-bg;
+        text-color:       @text-color;
+    }
+
+    inputbar {
+        spacing:    0;
+        text-color: @text-color;
+        padding:    8px;
+        border-radius: 8px;
+        background-color: @selected-bg; /* Darker background for input */
+    }
+
+    case-indicator,
+    entry,
+    prompt {
+        spacing:    0;
+        text-color: inherit;
+        background-color: inherit;
+    }
+
+    prompt {
+        margin: 0 0.3em 0 0 ; /* Add slight margin after prompt */
+    }
+}

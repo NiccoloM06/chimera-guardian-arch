@@ -1,0 +1,126 @@
+/* =======================================================================================
+ * ROFI THEME: DRACULA | CHIMERA GUARDIAN ARCH
+ * =======================================================================================
+ */
+
+* {
+    /* Dracula Palette */
+    dracula-bg:          #282a36;
+    dracula-fg:          #f8f8f2;
+    dracula-selection:   #44475a;
+    dracula-comment:     #6272a4;
+    dracula-red:         #ff5555;
+    dracula-purple:      #bd93f9;
+
+    /* Theme definition */
+    background-color:   @dracula-bg;
+    border-color:       @dracula-comment;
+    text-color:         @dracula-fg;
+    selected-bg:        @dracula-selection;
+    selected-fg:        @dracula-purple;
+    urgent-bg:          @dracula-red;
+    urgent-fg:          @dracula-fg;
+    active-bg:          @dracula-selection;
+    active-fg:          @dracula-fg;
+
+    font:               "JetBrainsMono Nerd Font 12";
+    background-color:   transparent; /* Use window background */
+    spacing:            2;
+}
+
+window {
+    background-color: @dracula-bg;
+    border:           2px;
+    border-color:     @dracula-comment;
+    border-radius:    10px;
+    padding:          16;
+    width:            600px;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+message {
+    border:       1px solid @border-color;
+    border-radius: 5px;
+    padding:      5px;
+}
+
+textbox {
+    text-color: @dracula-fg;
+}
+
+listview {
+    fixed-height: 0;
+    border:       1px solid @border-color;
+    border-radius: 5px;
+    spacing:      5px;
+    scrollbar:    false;
+    padding:      8px;
+    margin:       8px 0 0 0;
+    columns:      1;
+    lines:        8;
+}
+
+element {
+    border:  0;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+element.normal.normal {
+    background-color: @dracula-bg;
+    text-color:       @dracula-fg;
+}
+
+element.normal.urgent {
+    background-color: @urgent-bg;
+    text-color:       @urgent-fg;
+}
+
+element.normal.active {
+    background-color: @active-bg;
+    text-color:       @active-fg;
+}
+
+element.selected.normal {
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
+}
+
+element.selected.urgent {
+    background-color: @urgent-bg;
+    text-color:       @dracula-fg;
+}
+
+element.selected.active {
+    background-color: @active-bg;
+    text-color:       @dracula-fg;
+}
+
+inputbar {
+    spacing:    0;
+    text-color: @dracula-fg;
+    padding:    8px;
+    border-radius: 8px;
+    background-color: @dracula-selection;
+}
+
+case-indicator,
+entry,
+prompt {
+    spacing:    0;
+    text-color: inherit;
+    background-color: inherit;
+}
+
+prompt {
+    margin: 0 0.3em 0 0 ;
+}

@@ -1,0 +1,8 @@
+# =======================================================================================
+#  LAZYGIT CONFIGURATION | CHIMERA GUARDIAN ARCH
+#  Sets the visual theme to match Neovim.
+# =======================================================================================
+
+gui:
+  theme:
+    name: 'tokyonight' # Matches the Neovim theme for a consistent look

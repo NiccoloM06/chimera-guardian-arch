@@ -1,0 +1,114 @@
+/* =======================================================================================
+ * WAYBAR CONFIGURATION | CHIMERA GUARDIAN ARCH (Overlord Edition)
+ * Defines the modules and layout of the top status bar HUD.
+ * =======================================================================================
+ */
+{
+    // --- Bar Settings ---
+    "layer": "top",                 // Puts the bar always on top
+    "position": "top",              // Position at the top of the screen
+    "height": 30,                   // Height of the bar in pixels
+    "spacing": 4,                   // Spacing between modules
+
+    // ---------------------------------------------------------------------------------------
+    // MODULE LAYOUT (LEFT, CENTER, RIGHT)
+    // ---------------------------------------------------------------------------------------
+    "modules-left": ["custom/arch-menu", "hyprland/workspaces", "hyprland/mode"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["custom/guardian", "pulseaudio", "network", "cpu", "memory", "clock", "tray"], // Added custom/guardian
+
+    // ---------------------------------------------------------------------------------------
+    // CUSTOM MODULES
+    // ---------------------------------------------------------------------------------------
+    "custom/arch-menu": {
+        "format": "", // BlackArch Nerd Font icon
+        "tooltip": false, // Tooltip managed elsewhere or implied
+        "on-click": "rofi-blackarch-menu.sh", // Script for categorized BlackArch tools
+        "on-click-right": "rofi -show drun" // Standard launcher on right-click
+    },
+    "custom/guardian": {
+        "format": "{} <span rise='-1000'>🛡️</span>", // Shield icon with status text
+        "exec": "cat /run/chimera/state.json | jq -r '.profile'", // Reads profile from daemon state
+        "return-type": "json",
+        "interval": 5, // Update every 5 seconds
+        "tooltip-format": "Guardian Status: {profile}\nAlerts: {alerts}\nLKRG: {lkrg}",
+        "exec-if": "test -f /run/chimera/state.json", // Only run if the state file exists
+        "on-click": "make tui" // Launch the TUI on click
+    },
+
+    // ---------------------------------------------------------------------------------------
+    // HYPRLAND-SPECIFIC MODULES
+    // ---------------------------------------------------------------------------------------
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "active": "",
+            "default": ""
+        },
+        "on-click": "activate"
+    },
+    "hyprland/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "hyprland/window": {
+        "max-length": 50 // Limit the length of the window title
+    },
+
+    // ---------------------------------------------------------------------------------------
+    // SYSTEM TRAY
+    // ---------------------------------------------------------------------------------------
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10
+    },
+
+    // ---------------------------------------------------------------------------------------
+    // SYSTEM STATUS MODULES
+    // ---------------------------------------------------------------------------------------
+    "clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}", // Alternate format on click
+        "format": " {:%d/%m}   {:%H:%M}"
+    },
+    "cpu": {
+        "format": " {usage}%",
+        "tooltip": true,
+        "on-click": "kitty btop" // Launch btop on click
+    },
+    "memory": {
+        "format": " {}%",
+        "on-click": "kitty btop" // Launch btop on click
+    },
+    "network": {
+        "format-wifi": "{essid}  |  {bandwidthDownBytes} |  {bandwidthUpBytes}",
+        "format-ethernet": "{ifname}  |  {bandwidthDownBytes} |  {bandwidthUpBytes}",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}", // Show IP on click
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "on-click": "nm-connection-editor" // Open Network Manager GUI on click
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol" // Open PulseAudio Volume Control on click
+    }
+}

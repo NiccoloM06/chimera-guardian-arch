@@ -1,0 +1,26 @@
+/* =======================================================================================
+ * WAYBAR THEME: DRACULA | CHIMERA GUARDIAN ARCH
+ * Defines the color variables expected by the main style.css
+ * =======================================================================================
+ */
+
+/* --- Dracula Color Palette --- */
+@define-color theme_bg_color #282a36;        /* Background */
+@define-color theme_fg_color #f8f8f2;        /* Foreground */
+@define-color theme_selected_bg_color #44475a; /* Current Line/Selection Background */
+@define-color theme_comment_color #6272a4;     /* Comment / Muted Accent */
+@define-color theme_red_color #ff5555;        /* Red */
+@define-color theme_green_color #50fa7b;       /* Green */
+@define-color theme_yellow_color #f1fa8c;      /* Yellow */
+@define-color theme_blue_color #bd93f9;       /* Purple (Main Accent) */
+@define-color theme_pink_color #ff79c6;       /* Pink */
+@define-color theme_cyan_color #8be9fd;       /* Cyan */
+
+/* --- Calculated Colors --- */
+/* Semi-transparent background for the bar */
+@define-color theme_bg_color_transparent rgba(40, 42, 54, 0.8);
+/* Semi-transparent accent for the bar border */
+@define-color theme_accent_color_transparent rgba(189, 147, 249, 0.7); /* Purple */
+@define-color theme_inactive_color #9a9996;      /* Dim color for inactive elements */
+@define-color theme_urgent_color @theme_red_color;
+@define-color theme_accent_color @theme_blue_color; /* Main Accent */
