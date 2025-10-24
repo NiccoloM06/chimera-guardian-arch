@@ -1,0 +1,82 @@
+// =======================================================================================
+//  CONFIGURAZIONE FASTFETCH | CHIMERA GUARDIAN ARCH (v37+)
+//  Definisce una dashboard operativa professionale e incentrata sulla sicurezza.
+// =======================================================================================
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "file",
+    // Questo percorso punta al file logo.txt che creeremo di seguito
+    "source": "~/.config/fastfetch/logo.txt",
+    "color": {
+      // Colori per il logo BlackArch (rosso e bianco)
+      "1": "red",
+      "2": "white"
+    }
+  },
+  "display": {
+    "separator": "  ->",
+    "keyWidth": 12 // Larghezza delle etichette (es. "OS", "Kernel")
+  },
+  "modules": [
+    // --- Informazioni Generali di Sistema ---
+    "title",
+    "separator",
+    { "type": "os", "key": " OS" },
+    { "type": "host", "key": " Host" },
+    { "type": "kernel", "key": "Kernel" },
+    { "type": "uptime", "key": " Uptime" },
+    "break",
+    { "type": "packages", "key": " Packages" },
+    { "type": "shell", "key": " Shell" },
+    { "type": "wm", "key": " WM" },
+    "break",
+    { "type": "cpu", "key": " CPU" },
+    { "type": "gpu", "key": "GPU" },
+    { "type": "memory", "key": " Memory" },
+    
+    // --- DASHBOARD POSTURA DI SICUREZZA ---
+    "break",
+    {
+        "type": "custom",
+        "key": "🛡️ Sec Level",
+        "format": "{}",
+        "exec": "cat /tmp/guardian_status 2>/dev/null || echo 'Standard'"
+    },
+    {
+        "type": "custom",
+        "key": "🧱 UFW",
+        "format": "{}",
+        "exec": "systemctl is-active ufw | tr '[:lower:]' '[:upper:]'"
+    },
+    {
+        "type": "custom",
+        "key": "🚦 OpenSnitch",
+        "format": "{}",
+        "exec": "systemctl is-active opensnitchd | tr '[:lower:]' '[:upper:]'"
+    },
+    "break",
+    {
+        "type": "publicip",
+        "key": " Public IP"
+    },
+    {
+        "type": "localip",
+        "key": " Local IP",
+        "showType": "all"
+    },
+    {
+        "type": "dns",
+        "key": "DNS",
+        "format": "{1}" // Mostra solo il primo server DNS
+    },
+    {
+        "type": "vpn",
+        "key": "🔒 VPN"
+    },
+    
+    // --- Separatore Finale & Colori ---
+    "break",
+    "colors"
+  ]
+}
