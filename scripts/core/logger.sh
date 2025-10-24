@@ -1,43 +1,43 @@
-#!/usr/bin/env bash
-# Shared functions and environment library for the Chimera framework.
+#!/usr/-bin/env bash
+# =======================================================================================
+#  LIBRERIA CORE & LOGGER | CHIMERA GUARDIAN ARCH (Versione Corretta)
+#  Fornisce logging strutturato, gestione errori con rollback, variabili globali.
+# =======================================================================================
 
-# --- Global Variables ---
-# Defines the project's root directory
-# SC2155 Fix: Declare separately
-local _lib_script_dir
+# --- Variabili Globali Fondamentali ---
 _lib_script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 export CHIMERA_ROOT="${_lib_script_dir}/../.."
 
-# Defines the current log file path
-# SC2155 Fix: Declare separately
-local _current_date
 _current_date=$(date +%F)
-export LOG_FILE="$CHIMERA_ROOT/logs/chimera-${_current_date}.log"
+export LOG_FILE="$CHIMERA_ROOT/logs/chimera-install-${_current_date}.log"
 
-# --- Load Environment Variables ---
-# SC1091 Fix: Add source directive
+# --- Caricamento Variabili d'Ambiente da .env ---
 # shellcheck source=../../.env
 if [ -f "$CHIMERA_ROOT/.env" ]; then
+    set -a # Esporta automaticamente le variabili caricate
+    # shellcheck disable=SC1090
     source "$CHIMERA_ROOT/.env"
+    set +a
 else
-    echo -e "\033[1;31m[ERR]\033[0m .env file not found. Please copy .env.example to .env and configure it." >&2
+    echo -e "\033[1;31m[ERR]\033[0m File .env non trovato. Copia .env.example in .env e configuralo." >&2
     exit 1
 fi
 
-# --- ANSI Color Codes ---
+# --- Codici Colore ANSI ---
 export GREEN='\033[1;32m'
 export YELLOW='\033[1;33m'
 export RED='\033[1;31m'
 export BLUE='\033[1;34m'
 export NC='\033[0m' # No Color
 
-# --- Advanced Logging Function ---
+# --- Funzione di Logging Avanzata (CORRETTA) ---
+# Uso: log "LIVELLO" "Messaggio"
 log() {
   local level="$1"; shift
   local msg="$*"
   local ts
   ts=$(date +"%Y-%m-%d %H:%M:%S")
-  
+
   local color
   case "$level" in
     INFO) color="$BLUE" ;;
@@ -46,32 +46,51 @@ log() {
     ERROR) color="$RED" ;;
     *) color="$NC" ;;
   esac
-  
-  # Ensure the logs directory exists.
+
+  # Assicura che la directory dei log esista
   mkdir -p "$(dirname "$LOG_FILE")"
-  
-  echo -e "[$ts] ${color}[$level]${NC} $msg" | tee -a "$LOG_FILE" ${1:+"$( [[ "$level" == "ERROR" ]] && echo >&2 )"}
+
+  # Costruisci il messaggio di log
+  local log_message
+  log_message="[$ts] ${color}[$level]${NC} $msg"
+
+  # Scrivi sul file di log
+  echo -e "$log_message" >> "$LOG_FILE"
+
+  # Scrivi sulla console
+  # Importante: scrivi su stderr (>&2) solo se è un errore.
+  if [[ "$level" == "ERROR" ]]; then
+      echo -e "$log_message" >&2
+  else
+      echo -e "$log_message"
+  fi
 }
 
-# --- Dependency Checker ---
+# --- Controllo Dipendenze ---
 check_dep() {
-  command -v "$1" >/dev/null 2>&1 || {
-    log "ERROR" "Dependency '$1' not found. Please install it before proceeding."
+  command -v "$1" >/dev/null 2_>&1 || {
+    log "ERROR" "Dipendenza '$1' non trovata. Impossibile continuare."
     exit 1
   }
 }
 
-# --- Rollback Function ---
+# --- Funzione di Rollback (Definizione base) ---
 rollback() {
-  log "ERROR" "A critical error occurred. Initiating automatic rollback procedures..."
-  # Example Rollback Action: Restore latest config backup if available
+  local exit_code=$?
+  log "ERROR" "Errore critico rilevato (Codice: $exit_code). Avvio del rollback automatico..."
+  
   if command -v "$CHIMERA_ROOT/scripts/ops/rollback.sh" &> /dev/null; then
-      log "WARN" "Attempting to restore last configuration backup..."
-      "$CHIMERA_ROOT/scripts/ops/rollback.sh" --auto-confirm || log "ERROR" "Rollback script failed."
+      log "WARN" "Tentativo di ripristino dall'ultimo backup delle configurazioni..."
+      local target_user="${SUDO_USER:-$USER}"
+      if [ "$target_user" != "root" ]; then
+          sudo -u "$target_user" "$CHIMERA_ROOT/scripts/ops/rollback.sh" --auto-confirm || log "ERROR" "Script di rollback delle configurazioni fallito."
+      else
+           "$CHIMERA_ROOT/scripts/ops/rollback.sh" --auto-confirm || log "ERROR" "Script di rollback delle configurazioni fallito."
+      fi
   fi
-  log "ERROR" "Operation failed. The system might be in an inconsistent state. Please check the log for details: $LOG_FILE"
-  exit 1 # Ensure the script exits after rollback attempt.
+  
+  log "ERROR" "Operazione fallita. Sistema potenzialmente in stato inconsistente. Controlla il log: $LOG_FILE"
 }
 
-# --- Trap for Error Handling ---
-trap 'rollback' ERR
+# --- Trap per la Gestione degli Errori ---
+trap 'rollback' ERR INT TERM
