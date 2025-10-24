@@ -2,97 +2,83 @@
 set -euo pipefail
 
 # =======================================================================================
-#  GUARDIAN DAEMON | CHIMERA GUARDIAN ARCH
-#  Monitora in tempo reale lo stato di sicurezza del sistema e aggiorna un file di stato.
-#  Progettato per essere eseguito come servizio systemd.
+#  GUARDIAN DAEMON v1.5 | CHIMERA GUARDIAN ARCH (Omega Base)
+#  Monitors critical services and security state, writing JSON status.
 # =======================================================================================
 
-# --- Carica la libreria condivisa ---
-# Assume che CHIMERA_ROOT sia definito globalmente o che lo script sia eseguito dalla root del progetto.
-# Per un servizio systemd, è meglio definire CHIMERA_ROOT esplicitamente se necessario.
-# SOURCE_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-# source "$SOURCE_DIR/../core/logger.sh" # Usa logger.sh per il logging
+# --- Source Library (Essential for log function and CHIMERA_ROOT) ---
+# Assuming it runs via systemd, make path robust or define in service file
+# shellcheck source=../core/logger.sh
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../core/logger.sh" || { echo "[ERR] Cannot load logger.sh"; exit 1; }
 
-# --- Variabili Globali ---
+# --- Global Variables ---
 STATE_FILE="/run/chimera/state.json"
-STATUS_FILE_GUARDIAN_CTL="/tmp/guardian_status" # File dove guardian-ctl scrive il profilo attivo
-CHECK_INTERVAL=10 # Secondi tra ogni controllo
+GUARDIAN_CTL_STATUS_FILE="/tmp/guardian_status" # File where guardian-cli writes the profile
+CHECK_INTERVAL=10 # Seconds
 
-# --- Funzione di Logging Semplificata per il Daemon ---
-# Usa logger per scrivere sul log principale del framework
-log_daemon() {
-  local level="$1"; shift
-  local msg="$*"
-  # Assicurati che logger.sh sia caricato
-  if command -v log >/dev/null 2>&1; then
-    log "$level" "[Daemon] $msg"
-  else
-      echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] [Daemon] $msg" >> "/var/log/chimera_daemon.log" # Fallback log
-  fi
-}
+# --- Ensure /run directory exists ---
+mkdir -p "$(dirname "$STATE_FILE")"
+log "INFO" "Guardian Daemon starting..."
 
-# --- Funzione Principale di Monitoraggio ---
-monitor_system() {
-    local overall_status="SECURE" # Assume lo stato sicuro di default
-    local falco_alerts=0
-    local lkrg_status="INACTIVE"
-    local opensnitch_status="INACTIVE"
-    local current_profile="Unknown"
+# --- Main Monitoring Loop ---
+while true; do
+    # --- Initialize Status Variables ---
+    current_profile="Unknown"
+    lkrg_status="INACTIVE"
+    opensnitch_status="INACTIVE"
+    falco_status="INACTIVE"
+    falco_alerts_last_interval=0
+    overall_status="SECURE" # Assume secure by default
 
-    # 1. Controlla lo stato di LKRG
-    if systemctl is-active --quiet lkrg; then
-        lkrg_status="ACTIVE"
-    else
-        overall_status="WARN"
-        log_daemon "WARN" "Servizio LKRG non attivo."
+    # --- Read Current Security Profile ---
+    if [ -f "$GUARDIAN_CTL_STATUS_FILE" ]; then
+        # Read only the first line to get the status, ignoring potential color codes
+        current_profile=$(head -n 1 "$GUARDIAN_CTL_STATUS_FILE" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g")
     fi
 
-    # 2. Controlla lo stato di OpenSnitch
-    if systemctl is-active --quiet opensnitchd; then
-        opensnitch_status="ACTIVE"
-    else
-        overall_status="WARN"
-        log_daemon "WARN" "Servizio OpenSnitch non attivo."
-    fi
+    # --- Check Critical Service Status ---
+    if systemctl is-active --quiet lkrg &>/dev/null; then lkrg_status="ACTIVE"; else overall_status="WARN"; fi
+    if systemctl is-active --quiet opensnitchd &>/dev/null; then opensnitch_status="ACTIVE"; else overall_status="WARN"; fi
+    if systemctl is-active --quiet falco &>/dev/null; then falco_status="ACTIVE"; else overall_status="WARN"; fi
 
-    # 3. Controlla i log di Falco per alert recenti (ultimi $CHECK_INTERVAL secondi)
-    # Nota: Questo richiede che Falco logghi su journald
-    if command -v journalctl >/dev/null 2>&1; then
-        falco_alerts=$(journalctl -u falco --since "${CHECK_INTERVAL} seconds ago" -p warning --no-pager | grep -c "Rule:")
-        if [ "$falco_alerts" -gt 0 ]; then
+    # --- Check Recent Falco Alerts ---
+    # Note: Requires Falco logging to journald at 'warning' or higher
+    if command -v journalctl &>/dev/null; then
+        # Count lines containing "Rule:" with priority warning or higher in the last interval
+        falco_alerts_last_interval=$(journalctl -u falco --since "${CHECK_INTERVAL} seconds ago" -p warning --no-pager | grep -c "Rule:")
+        if [ "$falco_alerts_last_interval" -gt 0 ]; then
             overall_status="ALERT"
-            log_daemon "ALERT" "Rilevati $falco_alerts alert da Falco negli ultimi $CHECK_INTERVAL secondi."
-            # Qui si potrebbe integrare la logica per leggere triggers.yml ed eseguire azioni
+            log "WARN" "Detected $falco_alerts_last_interval Falco alert(s) in the last interval."
+            # Trigger logic (reading triggers.yml) could be added here in future versions
         fi
     else
-        log_daemon "WARN" "journalctl non trovato, impossibile controllare gli alert di Falco."
-    fi
-    
-    # 4. Legge il profilo di sicurezza corrente da guardian-ctl
-    if [ -f "$STATUS_FILE_GUARDIAN_CTL" ]; then
-        current_profile=$(cat "$STATUS_FILE_GUARDIAN_CTL")
+        log "WARN" "journalctl not found, cannot check Falco alerts."
     fi
 
-    # Scrive lo stato aggregato nel file JSON
-    cat <<EOF > "$STATE_FILE"
-{
-  "timestamp": "$(date -u --iso-8601=seconds)",
-  "overall_status": "$overall_status",
-  "security_profile": "$current_profile",
-  "alerts_last_interval": $falco_alerts,
-  "services": {
-    "lkrg": "$lkrg_status",
-    "opensnitch": "$opensnitch_status"
-  }
-}
-EOF
-}
+    # Ensure overall status reflects inactive critical services even if no Falco alerts
+    [[ "$overall_status" != "ALERT" ]] && [[ "$lkrg_status" != "ACTIVE" || "$opensnitch_status" != "ACTIVE" || "$falco_status" != "ACTIVE" ]] && overall_status="WARN"
 
-# --- Loop Principale del Daemon ---
-log_daemon "INFO" "Avvio del Guardian Daemon in modalità di monitoraggio."
-mkdir -p "$(dirname "$STATE_FILE")" # Assicura che la directory /run/chimera esista
+    # --- Write JSON State File ---
+    # Use jq for reliable JSON creation
+    jq -n \
+      --arg status "$overall_status" \
+      --arg profile "$current_profile" \
+      --argjson alerts "$falco_alerts_last_interval" \
+      --arg lkrg "$lkrg_status" \
+      --arg opensnitch "$opensnitch_status" \
+      --arg falco "$falco_status" \
+      '{
+          "timestamp": "'$(date -u --iso-8601=seconds)'",
+          "overall_status": $status,
+          "security_profile": $profile,
+          "alerts_last_interval": $alerts,
+          "services": {
+            "lkrg": $lkrg,
+            "opensnitch": $opensnitch,
+            "falco": $falco
+          }
+       }' > "$STATE_FILE"
 
-while true; do
-    monitor_system
+    # Wait for the next check interval
     sleep "$CHECK_INTERVAL"
 done

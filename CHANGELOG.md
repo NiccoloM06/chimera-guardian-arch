@@ -1,69 +1,105 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+Tutte le modifiche significative a questo progetto saranno documentate in questo file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
----
-
-## [Unreleased] - v38 (Overlord Edition)
-
-### Added
-- **Unified CLI (`overlord`):** New central entry point for all framework operations.
-- **Centralized Logging (`scripts/core/logger.sh`):** Timestamped, leveled logging to file and console.
-- **AI Anomaly Detection (`ai/anomaly.py`):** Basic Isolation Forest model for log analysis with daemon signaling.
-- **Self-Healing (`rollback` in `logger.sh`):** Basic `trap` implementation for error handling and potential rollback.
-- **Script Integrity Verification (`checksums.txt`):** Added checksum verification at the start of `install.sh`.
-- **DevOps Enhancements:** Added `VERSION` file, `tests/` directory with `bats` and `pytest` examples, and expanded `.github/` workflows.
-- **Enhanced TUI (`tui/dashboard.sh`):** Upgraded TUI with more options and integration with `make` targets.
-- **Professional Documentation:** Added `system_overview.md`, consolidating architecture and deployment, added Mermaid diagrams and badges to `README.md`.
-
-### Changed
-- Refactored `install.sh` to be a dispatcher calling platform-specific scripts (though only Arch is implemented).
-- Renamed main installation/finalization scripts to `scripts/ops/`.
-- Renamed shared library to `scripts/core/logger.sh`.
-- `README.md` rewritten to focus on the `overlord` CLI.
+Il formato si basa su [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [34.0.0] - 2025-10-16 - Monarch Edition
+## [Unreleased] - v51 (Dream Edition)
 
-This release represents a complete architectural refactoring into a professional, modular framework.
+### Aggiunto
+- **Strumenti di Prevenzione e Auditing Aggiuntivi:**
+    - `fail2ban`: Installato e abilitato con una configurazione base (`jail.local`) per la protezione SSH.
+    - `clamav`: Aggiunto per la scansione antivirus on-demand.
+    - `chkrootkit`: Aggiunto per il rilevamento di rootkit.
+    - `rkhunter`: Aggiunto come secondo scanner per rootkit.
+    - `lynis`: Aggiunto per l'auditing di sicurezza approfondito del sistema.
+- **`SYSTEM_GUIDE.md`:** Nuova sezione "11.0" per descrivere l'uso dei nuovi strumenti di auditing.
+- **`README.md`:** Aggiornata la sezione "Funzionalità Principali" per includere i nuovi strumenti.
 
-### Added
-- **`Makefile` as the universal entrypoint** for all major operations (`install`, `finalize`, `backup`, `update`, `healthcheck`, `theme`, `rollback`).
-- **`scripts/lib.sh`**, a shared library for centralized logging (timestamped, colored), error handling (`trap rollback`), and dependency checking.
-- **Automatic Rollback:** `trap` mechanism integrated into `lib.sh`.
-- **`scripts/modules/healthcheck.sh`** for generating a comprehensive security status report (JSON output).
-- **`scripts/rollback-system.sh`** for granular restoration of configurations from backups.
-- **Dynamic Theming (`themes/`):** Added a structured system for themes, selectable via the `.env` file. Each theme now has a `manifest.yml`.
-- **Configuration Overrides (`config-overrides/`):** Support for machine-specific configurations.
-- **Professional Documentation (`docs/`):** Added `architecture.md`, `CHANGELOG.md`, and `incident_response.md`.
-- **CI/CD (`.github/`):** Added workflows for automated linting (`shellcheck`, `yamllint`) and testing (`bats`).
-- **Integrity Verification (`checksums.txt`):** Critical scripts are now checksummed.
-
-### Changed
-- **Project Structure:** Refactored into a modular structure (config, scripts/modules, themes, etc.).
-- **`install.sh`:** Became a smart dispatcher validating the environment and calling internal modules.
-- **Logging:** All scripts now use the centralized logging functions from `lib.sh`.
-- **`backup-configs.sh`:** Upgraded to create versioned, compressed snapshots in `~/.chimera_backups/`.
-- **`README.md`:** Rewritten to reflect the `Makefile`-based workflow, including badges and a Mermaid diagram.
+### Modificato
+- **`scripts/ops/install.sh`:** Aggiornato per includere i nuovi pacchetti di sicurezza e la configurazione base di `fail2ban`.
 
 ---
-## [Prior Versions] - v1 to v33
 
-### Added
-- Initial post-installation script concept.
-- Integration of core security tools (`linux-hardened`, `ufw`, `aide`, `opensnitch`, `dnscrypt-proxy`, `tor`, `i2p`).
-- BlackArch repository integration.
-- Hyprland desktop environment with pre-configured Waybar, Rofi, Kitty.
-- `guardian-ctl` for managing security levels.
-- Virtualization suite with pre-configured VM profiles (`disposable`, `work`, `tor`, `cyberlab`).
-- Professional software stack (Neovim, VS Code, Docker, Wireshark, etc.).
-- Performance optimizations for NVMe.
-- `update-chimera` utility for system maintenance.
-- `zsh_functions` for custom commands.
-- Powerlevel10k integration with Kali theme.
-- Comprehensive documentation (`SYSTEM_GUIDE`, `DEPLOYMENT_CHECKLIST`).
-- Progress bar and detailed logging during installation.
+## [50.0.0] - 2025-10-17 - Omega Foundation Edition
+
+Questa versione implementa le fondamenta del sistema di monitoraggio in tempo reale e il TUI (Terminal User Interface) Control Center.
+
+### Aggiunto
+- **`scripts/daemons/guardian_daemon.sh`:** Servizio demone in background che monitora lo stato dei servizi critici (LKRG, OpenSnitch, Falco) e scrive in `/run/chimera/state.json`.
+- **`tui/dashboard.sh`:** Un'interfaccia utente testuale interattiva (`make tui`) costruita con `gum` per gestire l'intero framework (aggiornamenti, livelli di sicurezza, VM, temi, etc.).
+- **Integrazione Waybar:** Il file `config/waybar/config` è stato aggiornato con un modulo `custom/guardian` che legge lo stato del demone in tempo reale.
+- **Stili Waybar:** Il file `config/waybar/style.css` è stato aggiornato con classi dinamiche (`.secure`, `.warn`, `.alert`) per il widget Guardian.
+
+### Modificato
+- **`scripts/ops/install.sh`:** Aggiornato per installare `gum` e `jq` (dipendenze per TUI/Daemon) e per installare e abilitare il nuovo `guardian-daemon.service`.
+- **`Makefile`:** Aggiunto il target `tui` per lanciare la nuova dashboard.
+
+---
+
+## [49.0.0] - 2025-10-17 - Zenith II Edition
+
+Questa versione espande massicciamente la suite di software preinstallato e rafforza il processo di installazione.
+
+### Aggiunto
+- **Controllo Dipendenze Robusto (`scripts/core/dependencies.sh`):** Un nuovo script che verifica e installa automaticamente le dipendenze essenziali del framework (`git`, `curl`, `aide`, `falco`, `auditd`, `rsync`, etc.) all'inizio dell'installazione.
+- **Suite Privacy Avanzata:**
+    - `protonmail-bridge` (AUR)
+    - `torbrowser-launcher` (Official)
+    - `firejail` (Official)
+    - `veracrypt` (Official)
+    - `mat2` (Official)
+- **Suite Pentesting Essenziale:**
+    - `metasploit` (BlackArch)
+    - `burpsuite` (BlackArch)
+    - `owasp-zap` (BlackArch)
+    - `aircrack-ng` (Official)
+    - `autopsy` (BlackArch)
+    - `cutter` (Official)
+    - `hash-identifier` (BlackArch)
+    - `steghide` (Official)
+    - `trivy` (Official)
+- **Driver Wi-Fi Esterni (Opzionali):** Aggiunto uno step interattivo nello script di installazione (`STAGE 2.5`) per installare i driver DKMS comuni per adattatori Wi-Fi USB (Alfa, TP-Link, etc.).
+
+### Modificato
+- **`scripts/ops/install.sh`:** Ristrutturato per chiamare il nuovo script `dependencies.sh` e per includere tutti i nuovi pacchetti di sicurezza e privacy nelle liste di installazione `pacman` e `paru`.
+- **`README.md` & `SYSTEM_GUIDE.md`:** Aggiornati per riflettere l'enorme ampliamento della suite software e le nuove funzionalità.
+
+---
+
+## [38.0.0] - 2025-10-17 - Overlord Edition
+
+Refactoring architetturale completo in un framework SecureOps modulare e professionale.
+
+### Aggiunto
+- **CLI Unificata (`overlord`):** Nuovo entrypoint centrale per tutte le operazioni.
+- **Libreria Core (`scripts/core/logger.sh`):** Logging centralizzato con timestamp e livelli.
+- **Rollback Automatico (`trap 'rollback' ERR`):** Gestione sicura degli errori.
+- **Controllo Integrità (`checksums.txt`):** Verifica dei checksum all'avvio.
+- **Modulo AI (`ai/anomaly.py`):** Modello base di Isolation Forest per l'analisi dei log.
+- **Configurazione Dichiarativa (`config/guardian/profiles/`):** Profili di sicurezza definiti in YAML.
+- **Prompt Powerlevel10k (`.p10k.zsh`):** Aggiunto tema preconfigurato in stile Kali.
+- **Documentazione Professionale:** Aggiunti `system_overview.md`, `architecture.md`, `incident_response.md`.
+
+### Modificato
+- **`Makefile`:** Sostituito dal CLI `overlord` come interfaccia utente principale (anche se il `Makefile` può rimanere per le operazioni di build).
+- **Struttura Script:** Rifattorizzata in `scripts/core`, `scripts/ops`, `scripts/modules`.
+
+---
+
+## [Versioni Precedenti] - v1.0.0 a v37.0.0
+
+### Aggiunto
+- Concetto iniziale di script post-installazione.
+- Hardening di base (`linux-hardened`, `ufw`, `aide`, `opensnitch`).
+- Integrazione BlackArch.
+- Ambiente desktop Hyprland, Waybar, Rofi, Kitty.
+- `guardian-ctl` per 3 livelli di sicurezza.
+- Suite di virtualizzazione (`vm-profiles`).
+- Suite software base per sviluppatori.
+- Ottimizzazioni performance NVMe.
+- Funzioni `zsh_functions` e `fastfetch`.
+- BTRFS e `snapper` per snapshot.

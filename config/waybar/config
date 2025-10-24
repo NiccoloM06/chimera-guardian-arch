@@ -15,23 +15,23 @@
     // ---------------------------------------------------------------------------------------
     "modules-left": ["custom/arch-menu", "hyprland/workspaces", "hyprland/mode"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["custom/guardian", "pulseaudio", "network", "cpu", "memory", "clock", "tray"], // Added custom/guardian
+    "modules-right": ["custom/guardian", "pulseaudio", "network", "cpu", "memory", "clock", "tray"],
 
     // ---------------------------------------------------------------------------------------
     // CUSTOM MODULES
     // ---------------------------------------------------------------------------------------
     "custom/arch-menu": {
         "format": "", // BlackArch Nerd Font icon
-        "tooltip": false, // Tooltip managed elsewhere or implied
+        "tooltip-format": "Categorized Application Menu",
         "on-click": "rofi-blackarch-menu.sh", // Script for categorized BlackArch tools
         "on-click-right": "rofi -show drun" // Standard launcher on right-click
     },
     "custom/guardian": {
         "format": "{} <span rise='-1000'>🛡️</span>", // Shield icon with status text
-        "exec": "cat /run/chimera/state.json | jq -r '.profile'", // Reads profile from daemon state
+        "exec": "cat /run/chimera/state.json | jq -r '.security_profile' 2>/dev/null || echo 'Offline'", // Reads profile from daemon state
         "return-type": "json",
         "interval": 5, // Update every 5 seconds
-        "tooltip-format": "Guardian Status: {profile}\nAlerts: {alerts}\nLKRG: {lkrg}",
+        "tooltip-format": "Guardian Status: {overall_status}\nProfile: {security_profile}\nAlerts: {alerts_last_interval}\nLKRG: {services.lkrg} | Falco: {services.falco}",
         "exec-if": "test -f /run/chimera/state.json", // Only run if the state file exists
         "on-click": "make tui" // Launch the TUI on click
     },
@@ -91,7 +91,7 @@
         "tooltip-format": "{ifname} via {gwaddr} ",
         "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "Disconnected ⚠",
-        "on-click": "nm-connection-editor" // Open Network Manager GUI on click
+        "on-click": "nm-connection-editor" // Open Network Manager GUI on left click
     },
     "pulseaudio": {
         "format": "{volume}% {icon} {format_source}",

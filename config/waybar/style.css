@@ -1,9 +1,16 @@
 /* =======================================================================================
  * WAYBAR STYLING (CSS) | CHIMERA GUARDIAN ARCH (Overlord Edition)
- * Defines the visual appearance of the status bar and its modules.
- * Colors are sourced dynamically based on the selected theme.
+ * Main style template. Imports color variables from the active theme.
  * =======================================================================================
  */
+
+/* ---------------------------------------------------------------------------------------
+ * DYNAMIC THEME IMPORT
+ * ---------------------------------------------------------------------------------------
+ */
+/* This line imports the color variables from the theme file (e.g., dracula/waybar.css) 
+   that is symlinked by the link-configs.sh script. */
+@import "theme.css";
 
 /* ---------------------------------------------------------------------------------------
  * GENERAL STYLING
